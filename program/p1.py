@@ -76,6 +76,7 @@ def menu(records: list, next_id: int):
     print("1. 기록 추가")
     print("2. 전체 기록 조회")
     print("3. 기록 삭제")
+    print("4. 기록 수정")
     print("7. 종료\n")
     choice = input("선택하세요 (1-7): ").strip()
             
@@ -85,6 +86,8 @@ def menu(records: list, next_id: int):
         view_records(records)
     elif choice == "3":
         delete_record(records)
+    elif choice == "4":
+        update_record(records)
     elif choice == "7":
         print("일일기록을 종료합니다.")
     else:
@@ -115,6 +118,9 @@ def validate_id(i: str):
     
 def delete_record(records: list, input_func=input):
     while True:
+        if not records: 
+            print("\n삭제할 기록이 없습니다.")
+            return None
         record_id = input_validation("삭제할 기록의 ID를 입력하세요: ", validate_id, input_func) 
         record_id = int(record_id)
         record = find_record_by_id(records, record_id)
@@ -127,8 +133,50 @@ def delete_record(records: list, input_func=input):
         else:
             print("해당 ID의 기록을 찾을 수 없습니다. 다시 입력해주세요.")
             # 여기서 별도로 뭘 안 해도, while True 덕분에 자동으로 맨 위로 돌아감
-        
 
+def update_record(records: list, input_func=input):
+    while True:
+        if not records:
+            print("\n수정할 기록이 없습니다.")
+            return None
+        record_id = input_validation("수정할 기록의 ID를 입력하세요: ", validate_id, input_func) 
+        record_id = int(record_id)
+        record = find_record_by_id(records, record_id)  # record는 dict
+        if record:
+            while True: 
+                print("1. 날짜")
+                print("2. 활동")
+                print("3. 소요시간")
+                print("4. 메모")
+                choice = input("선택하세요 (1-4): ").strip()
+                        
+                if choice == "1":
+                    date = input_validation("새로운 날짜(YYYY-MM-DD): ", validate_date, input_func)    
+                    record["date"] = date
+                    print("기록이 수정되었습니다.")
+                    return record
+                elif choice == "2":
+                    activity = input_func("새로운 활동: ").strip()
+                    record["activity"] = activity
+                    print("기록이 수정되었습니다.")
+                    return record
+                elif choice == "3":
+                    duration = input_validation("새로운 소요시간(HH:MM): ", validate_spent_time, input_func)
+                    record["duration"] = duration
+                    print("기록이 수정되었습니다.")
+                    return record
+                elif choice == "4":
+                    memo = input_func("새로운 메모: ").strip()
+                    record["memo"] = memo
+                    print("기록이 수정되었습니다.")
+                    return record
+                else:
+                    print("다시 시도해주세요.")
+        else:
+            print("해당 ID의 기록을 찾을 수 없습니다. 다시 입력해주세요.")
+            # 여기서 별도로 뭘 안 해도, while True 덕분에 자동으로 맨 위로 돌아감
+        
+            
 
 def main():
     global next_id
