@@ -23,7 +23,7 @@ def validate_date(s: str) -> bool: # s는 문자열로 쓰일 것임을 약속 &
 def validate_spent_time(s: str) -> bool:
     if not isinstance(s, str):
         return False
-    if not re.match(r"^\d{2}:\d{2}$", s):
+    if not re.match(r"^\d{2}:\d{2}$", s): 
         return False
     try:
         hh, mm = map(int, s.split(":"))
@@ -39,7 +39,7 @@ def input_validation(prompt: str, validator, input_func=input) -> str: # 매개�
     # prompt는 문자열로 쓰일 것을 약속, validator는 입력값 검증하는 함수, input_func는 입력 받는 함수
     
     while True: 
-        v = input_func(prompt).strip() # input_func로 prompt 입력받고 앞뒤 공백 제거 
+        v = input_func(prompt).strip() # input_func로 prompt 입력받고 앞뒤 공백 제거 / 입력 받는 부분
         if validator(v):    # 검증 완료되면 v 반환
             return v
         print("형식 오류! 다시 확인하고 입력해주세요.") # 재입력 요구
@@ -75,6 +75,7 @@ def menu(records: list, next_id: int):
     print("\n<메뉴>\n")
     print("1. 기록 추가")
     print("2. 전체 기록 조회")
+    print("3. 기록 삭제")
     print("7. 종료\n")
     choice = input("선택하세요 (1-7): ").strip()
             
@@ -82,13 +83,53 @@ def menu(records: list, next_id: int):
         _, next_id = add_record(records, next_id)
     elif choice == "2":
         view_records(records)
+    elif choice == "3":
+        delete_record(records)
     elif choice == "7":
         print("일일기록을 종료합니다.")
     else:
         print("다시 시도해주세요.")
         
     return choice, next_id  # 전역변수를 main한테 전달해야함
-            
+
+def find_record_by_id(records: list, record_id: int): # 순수하게 찾는것만
+    for record in records:  # records라는 리스트 안에서 한개씩 가져오므로 record는 dict
+        if record["id"] == int(record_id):
+            return record   
+    
+    return None 
+
+def validate_id(i: str):
+    
+    if not isinstance(i, str): # 문자열인지 확인 문자열로 받아져서 어쩔 수 없음
+        return False
+    if not re.match(r"^\d+$", str(i)):  # 숫자형식 아니면 False
+        return False
+    try:    # 실행할 코드 : 코드 실행하다가 오류 날 수 있는 상황 처리할 때 쓰임 : 근데 여기선 더 안전하게 하려는 코드
+        n = int(i)    # 숫자로 변환
+    except ValueError:  # 예외 발생 시 실행
+        return False
+    if n < 1 : 
+        return False
+    return True
+    
+def delete_record(records: list, input_func=input):
+    while True:
+        record_id = input_validation("삭제할 기록의 ID를 입력하세요: ", validate_id, input_func) 
+        record_id = int(record_id)
+        record = find_record_by_id(records, record_id)
+        
+        if record:
+            # 찾았을 때 할 일 (삭제, 메시지 출력, return)
+            records.remove(record)
+            print("기록이 삭제되었습니다.")
+            return record
+        else:
+            print("해당 ID의 기록을 찾을 수 없습니다. 다시 입력해주세요.")
+            # 여기서 별도로 뭘 안 해도, while True 덕분에 자동으로 맨 위로 돌아감
+        
+
+
 def main():
     global next_id
     while True:
