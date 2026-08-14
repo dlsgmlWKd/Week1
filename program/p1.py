@@ -85,7 +85,7 @@ def menu(records: list, next_id: int):
     elif choice == "7":
         print("일일기록을 종료합니다.")
     else:
-        print("g다시 시도해주세요.")
+        print("다시 시도해주세요.")
         
     return choice, next_id  # 전역변수를 main한테 전달해야함
             
